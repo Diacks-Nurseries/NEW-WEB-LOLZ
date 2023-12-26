@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and File Upload</title>
+</head>
+<body>
+
+    <img src="uploads/b9ed6b_52c1d2ddb5104a738be602c4e0fbb4b3~mv2.png" alt="Diacks Backend">
+
+<br>
+
+    <h2>Login to your account</h2>
+
+
+    <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <button type="button" onclick="login()">Login</button>
+
+
+<p>Valid login credentials
+<br>
+peter
+<br> 
+krue
+<br> 
+caleb
+<br>
+dave
+</p>
+
+    </form>
+
+    <div id="formContainer" style="display:none;">
+        <h2>Upload account PDF</h2>
+        <form id="pdfForm" enctype="multipart/form-data">
+            <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" required><br>
+            <button type="button" onclick="uploadFile()">Upload PDF</button>
+        </form>
+    </div>
+
+    <div id="result" style="display:none;">
+        <h2>Uploaded File Details and link</h2>
+        <p id="fileDetails"></p>
+        <p id="viewLink"></p>
+    </div>
+
+    <div id="iframeContainer" style="display:none;">
+        <h2>Add a Overdue Account</h2>
+        <iframe width="100%" height="500" src="https://docs.google.com/spreadsheets/d/1xhSiXTQ4__BzLKcki1PrNa6L0icJk8Hg9wSWbXeDpLY/edit?usp=sharing" id="embeddedIframe"></iframe>
+    </div>
+
+    <script>
+    function login() {
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+
+    // Simple authentication check
+    if ((username === 'peter' && password === '32358008') ||
+        (username === 'krue' && password === '20whitest') ||
+        (username === 'caleb' && password === '628TweedStreet') ||
+        (username === 'dave' && password === 'hannah')) {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('formContainer').style.display = 'block';
+    } else {
+        alert('Invalid credentials');
+    }
+}
+
+        function uploadFile() {
+            var pdfFileInput = document.getElementById('pdfFile');
+            var pdfFile = pdfFileInput.files[0];
+
+            if (!pdfFile) {
+                alert('Please select a PDF file.');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('pdfFile', pdfFile);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display file details
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('fileDetails').innerText = JSON.stringify(data, null, 2);
+
+                // Display view link
+                document.getElementById('viewLink').innerHTML = `<a href="${data.viewLink}" target="_blank">View PDF</a>`;
+
+                // Display the embedded iframe
+                document.getElementById('iframeContainer').style.display = 'block';
+            })
+            .catch(error => console.error('Error uploading file:', error));
+        }
+    </script>
+</body>
+</html>
